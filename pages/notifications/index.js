@@ -56,6 +56,9 @@ const NotificationsPage = () => {
   };
 
   const filterNotifications = () => {
+    if (!Array.isArray(notifications)) {
+      return;
+    }
     let filtered = [...notifications];
 
     // Search filter

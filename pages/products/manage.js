@@ -71,6 +71,9 @@ const ProductManagePage = () => {
   };
 
   const filterProducts = () => {
+    if (!Array.isArray(products)) {
+      return;
+    }
     let filtered = [...products];
 
     // Search filter

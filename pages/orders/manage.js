@@ -62,6 +62,9 @@ const OrderManagePage = () => {
   };
 
   const filterOrders = () => {
+    if (!Array.isArray(orders)) {
+      return;
+    }
     let filtered = [...orders];
 
     // Search filter

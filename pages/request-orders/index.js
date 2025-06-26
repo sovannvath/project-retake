@@ -70,6 +70,9 @@ const RequestOrdersPage = () => {
   };
 
   const filterOrders = () => {
+    if (!Array.isArray(requestOrders)) {
+      return;
+    }
     let filtered = [...requestOrders];
 
     // Search filter
