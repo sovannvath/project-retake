@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import Layout from "../../components/layout/Layout";
-import apiClient from "../../lib/api/client";
+import Layout from "../components/layout/Layout";
+import apiClient from "../lib/api/client";
 import { LogOut, CheckCircle } from "lucide-react";
 
 const LogoutPage = () => {
@@ -22,12 +22,12 @@ const LogoutPage = () => {
 
       // Redirect to login page after a short delay
       setTimeout(() => {
-        router.push("/auth/login");
+        router.push("/login");
       }, 2000);
     } catch (error) {
       console.error("Logout error:", error);
       // Even if logout fails, redirect to login
-      router.push("/auth/login");
+      router.push("/login");
     }
   };
 
@@ -53,7 +53,7 @@ const LogoutPage = () => {
               </div>
 
               <button
-                onClick={() => router.push("/auth/login")}
+                onClick={() => router.push("/login")}
                 className="w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#3D52A0] hover:bg-[#2A3A7C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3D52A0] transition-colors duration-200"
               >
                 <LogOut className="w-4 h-4 mr-2" />
