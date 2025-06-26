@@ -1,24 +1,24 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { useAuth } from '../../lib/auth/authContext';
-import { Eye, EyeOff, LogIn, Mail, Lock } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { useAuth } from "../lib/auth/authContext";
+import { Eye, EyeOff, LogIn, Mail, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login, isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (isAuthenticated && !loading) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, loading, router]);
 
@@ -36,13 +36,13 @@ const Login = () => {
     try {
       const result = await login(formData);
       if (result.success) {
-        toast.success('Login successful!');
-        router.push('/dashboard');
+        toast.success("Login successful!");
+        router.push("/dashboard");
       } else {
-        toast.error(result.error || 'Login failed');
+        toast.error(result.error || "Login failed");
       }
     } catch (error) {
-      toast.error('An error occurred during login');
+      toast.error("An error occurred during login");
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +65,9 @@ const Login = () => {
             <div className="mx-auto h-16 w-16 bg-gradient-to-r from-[#3D52A0] to-[#7091E6] rounded-full flex items-center justify-center mb-6">
               <LogIn size={32} className="text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome Back
+            </h2>
             <p className="text-gray-600">Sign in to your account to continue</p>
           </div>
 
@@ -74,7 +76,10 @@ const Login = () => {
             <div className="space-y-4">
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email Address
                 </label>
                 <div className="relative">
@@ -97,7 +102,10 @@ const Login = () => {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -107,7 +115,7 @@ const Login = () => {
                   <input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
                     value={formData.password}
@@ -121,9 +129,15 @@ const Login = () => {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   >
                     {showPassword ? (
-                      <EyeOff size={20} className="text-gray-400 hover:text-gray-600" />
+                      <EyeOff
+                        size={20}
+                        className="text-gray-400 hover:text-gray-600"
+                      />
                     ) : (
-                      <Eye size={20} className="text-gray-400 hover:text-gray-600" />
+                      <Eye
+                        size={20}
+                        className="text-gray-400 hover:text-gray-600"
+                      />
                     )}
                   </button>
                 </div>
@@ -154,9 +168,9 @@ const Login = () => {
             {/* Register Link */}
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link 
-                  href="/auth/register" 
+                Don't have an account?{" "}
+                <Link
+                  href="/register"
                   className="font-medium text-[#3D52A0] hover:text-[#7091E6] transition-colors duration-200"
                 >
                   Sign up here
@@ -171,4 +185,3 @@ const Login = () => {
 };
 
 export default Login;
-

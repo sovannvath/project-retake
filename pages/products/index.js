@@ -1,27 +1,27 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../../components/layout/Layout';
-import apiClient from '../../lib/api/client';
-import { 
-  Search, 
-  Filter, 
-  Grid, 
-  List, 
-  ShoppingCart, 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Layout from "../../components/layout/Layout";
+import apiClient from "../../lib/api/client";
+import {
+  Search,
+  Filter,
+  Grid,
+  List,
+  ShoppingCart,
   Eye,
   Star,
   Heart,
-  SlidersHorizontal
-} from 'lucide-react';
-import { toast } from 'sonner';
+  SlidersHorizontal,
+} from "lucide-react";
+import { toast } from "sonner";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
-  const [sortBy, setSortBy] = useState('name');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
+  const [sortBy, setSortBy] = useState("name");
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
@@ -38,43 +38,53 @@ const ProductsPage = () => {
     try {
       const response = await apiClient.getProducts();
       if (response.success) {
-        setProducts(response.data);
-        setFilteredProducts(response.data);
+        const productsData = Array.isArray(response.data) ? response.data : [];
+        setProducts(productsData);
+        setFilteredProducts(productsData);
       } else {
-        toast.error('Failed to load products');
+        toast.error("Failed to load products");
+        setProducts([]);
+        setFilteredProducts([]);
       }
     } catch (error) {
-      console.error('Products error:', error);
-      toast.error('Error loading products');
+      console.error("Products error:", error);
+      toast.error("Error loading products");
+      setProducts([]);
+      setFilteredProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
   const filterProducts = () => {
+    if (!Array.isArray(products)) {
+      return;
+    }
     let filtered = [...products];
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Price filter
-    filtered = filtered.filter(product =>
-      product.price >= priceRange[0] && product.price <= priceRange[1]
+    filtered = filtered.filter(
+      (product) =>
+        product.price >= priceRange[0] && product.price <= priceRange[1],
     );
 
     // Sort
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'price-low':
+        case "price-low":
           return a.price - b.price;
-        case 'price-high':
+        case "price-high":
           return b.price - a.price;
-        case 'name':
+        case "name":
           return a.name.localeCompare(b.name);
         default:
           return 0;
@@ -88,13 +98,13 @@ const ProductsPage = () => {
     try {
       const response = await apiClient.addToCart(productId, 1);
       if (response.success) {
-        toast.success('Product added to cart!');
+        toast.success("Product added to cart!");
       } else {
-        toast.error('Failed to add product to cart');
+        toast.error("Failed to add product to cart");
       }
     } catch (error) {
-      console.error('Add to cart error:', error);
-      toast.error('Error adding to cart');
+      console.error("Add to cart error:", error);
+      toast.error("Error adding to cart");
     }
   };
 
@@ -113,7 +123,7 @@ const ProductsPage = () => {
           </div>
         )}
       </div>
-      
+
       <div className="p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
           {product.name}
@@ -121,20 +131,20 @@ const ProductsPage = () => {
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description}
         </p>
-        
+
         <div className="flex items-center mb-3">
           <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
                 size={16}
-                className={`${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                className={`${i < 4 ? "text-yellow-400 fill-current" : "text-gray-300"}`}
               />
             ))}
           </div>
           <span className="text-sm text-gray-600 ml-2">(4.0)</span>
         </div>
-        
+
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-[#3D52A0]">
             ${product.price}
@@ -143,10 +153,10 @@ const ProductsPage = () => {
             Stock: {product.quantity}
           </span>
         </div>
-        
+
         <div className="flex space-x-2">
           <button
-            onClick={() => router.push(`/customer/products/${product.id}`)}
+            onClick={() => router.push(`/products/${product.id}`)}
             className="flex-1 flex items-center justify-center px-4 py-2 border border-[#3D52A0] text-[#3D52A0] rounded-lg hover:bg-[#3D52A0] hover:text-white transition-colors duration-200"
           >
             <Eye size={16} className="mr-2" />
@@ -171,28 +181,26 @@ const ProductsPage = () => {
         <div className="w-24 h-24 bg-gradient-to-br from-[#EDE8F5] to-[#ADBBDA] rounded-lg flex items-center justify-center flex-shrink-0">
           <div className="text-3xl text-[#3D52A0] opacity-20">📦</div>
         </div>
-        
+
         <div className="flex-1">
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             {product.name}
           </h3>
-          <p className="text-gray-600 mb-3">
-            {product.description}
-          </p>
-          
+          <p className="text-gray-600 mb-3">{product.description}</p>
+
           <div className="flex items-center mb-2">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
                   size={16}
-                  className={`${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                  className={`${i < 4 ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                 />
               ))}
             </div>
             <span className="text-sm text-gray-600 ml-2">(4.0)</span>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <span className="text-2xl font-bold text-[#3D52A0]">
@@ -202,10 +210,10 @@ const ProductsPage = () => {
                 Stock: {product.quantity}
               </span>
             </div>
-            
+
             <div className="flex space-x-2">
               <button
-                onClick={() => router.push(`/customer/products/${product.id}`)}
+                onClick={() => router.push(`/products/${product.id}`)}
                 className="px-4 py-2 border border-[#3D52A0] text-[#3D52A0] rounded-lg hover:bg-[#3D52A0] hover:text-white transition-colors duration-200"
               >
                 View Details
@@ -248,7 +256,10 @@ const ProductsPage = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search
+                size={20}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              />
               <input
                 type="text"
                 placeholder="Search products..."
@@ -273,17 +284,17 @@ const ProductsPage = () => {
               {/* View Mode */}
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => setViewMode("grid")}
                   className={`p-2 rounded-md transition-colors duration-200 ${
-                    viewMode === 'grid' ? 'bg-white shadow-sm' : ''
+                    viewMode === "grid" ? "bg-white shadow-sm" : ""
                   }`}
                 >
                   <Grid size={20} className="text-gray-600" />
                 </button>
                 <button
-                  onClick={() => setViewMode('list')}
+                  onClick={() => setViewMode("list")}
                   className={`p-2 rounded-md transition-colors duration-200 ${
-                    viewMode === 'list' ? 'bg-white shadow-sm' : ''
+                    viewMode === "list" ? "bg-white shadow-sm" : ""
                   }`}
                 >
                   <List size={20} className="text-gray-600" />
@@ -314,7 +325,12 @@ const ProductsPage = () => {
                       type="number"
                       placeholder="Min"
                       value={priceRange[0]}
-                      onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                      onChange={(e) =>
+                        setPriceRange([
+                          parseInt(e.target.value) || 0,
+                          priceRange[1],
+                        ])
+                      }
                       className="input"
                     />
                     <span>-</span>
@@ -322,7 +338,12 @@ const ProductsPage = () => {
                       type="number"
                       placeholder="Max"
                       value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 1000])}
+                      onChange={(e) =>
+                        setPriceRange([
+                          priceRange[0],
+                          parseInt(e.target.value) || 1000,
+                        ])
+                      }
                       className="input"
                     />
                   </div>
@@ -341,7 +362,7 @@ const ProductsPage = () => {
           </div>
 
           {filteredProducts.length > 0 ? (
-            viewMode === 'grid' ? (
+            viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
@@ -372,4 +393,3 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
-

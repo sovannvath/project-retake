@@ -1,26 +1,26 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../../components/layout/Layout';
-import apiClient from '../../lib/api/client';
-import { 
-  ShoppingCart, 
-  Plus, 
-  Minus, 
-  Trash2, 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Layout from "../../components/layout/Layout";
+import apiClient from "../../lib/api/client";
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  Trash2,
   CreditCard,
   ArrowLeft,
   Package,
-  AlertCircle
-} from 'lucide-react';
-import { toast } from 'sonner';
+  AlertCircle,
+} from "lucide-react";
+import { toast } from "sonner";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState({});
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
-  const [orderNotes, setOrderNotes] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [orderNotes, setOrderNotes] = useState("");
   const [processingOrder, setProcessingOrder] = useState(false);
   const router = useRouter();
 
@@ -35,11 +35,11 @@ const CartPage = () => {
       if (response.success) {
         setCartItems(response.data.items || []);
       } else {
-        toast.error('Failed to load cart');
+        toast.error("Failed to load cart");
       }
     } catch (error) {
-      console.error('Cart error:', error);
-      toast.error('Error loading cart');
+      console.error("Cart error:", error);
+      toast.error("Error loading cart");
     } finally {
       setLoading(false);
     }
@@ -55,28 +55,30 @@ const CartPage = () => {
         }
       }
     } catch (error) {
-      console.error('Payment methods error:', error);
+      console.error("Payment methods error:", error);
     }
   };
 
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
-    
+
     setUpdating({ ...updating, [itemId]: true });
-    
+
     try {
       const response = await apiClient.updateCartItem(itemId, newQuantity);
       if (response.success) {
-        setCartItems(cartItems.map(item => 
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        ));
-        toast.success('Cart updated');
+        setCartItems(
+          cartItems.map((item) =>
+            item.id === itemId ? { ...item, quantity: newQuantity } : item,
+          ),
+        );
+        toast.success("Cart updated");
       } else {
-        toast.error('Failed to update cart');
+        toast.error("Failed to update cart");
       }
     } catch (error) {
-      console.error('Update cart error:', error);
-      toast.error('Error updating cart');
+      console.error("Update cart error:", error);
+      toast.error("Error updating cart");
     } finally {
       setUpdating({ ...updating, [itemId]: false });
     }
@@ -84,18 +86,18 @@ const CartPage = () => {
 
   const removeItem = async (itemId) => {
     setUpdating({ ...updating, [itemId]: true });
-    
+
     try {
       const response = await apiClient.removeCartItem(itemId);
       if (response.success) {
-        setCartItems(cartItems.filter(item => item.id !== itemId));
-        toast.success('Item removed from cart');
+        setCartItems(cartItems.filter((item) => item.id !== itemId));
+        toast.success("Item removed from cart");
       } else {
-        toast.error('Failed to remove item');
+        toast.error("Failed to remove item");
       }
     } catch (error) {
-      console.error('Remove item error:', error);
-      toast.error('Error removing item');
+      console.error("Remove item error:", error);
+      toast.error("Error removing item");
     } finally {
       setUpdating({ ...updating, [itemId]: false });
     }
@@ -106,56 +108,64 @@ const CartPage = () => {
       const response = await apiClient.clearCart();
       if (response.success) {
         setCartItems([]);
-        toast.success('Cart cleared');
+        toast.success("Cart cleared");
       } else {
-        toast.error('Failed to clear cart');
+        toast.error("Failed to clear cart");
       }
     } catch (error) {
-      console.error('Clear cart error:', error);
-      toast.error('Error clearing cart');
+      console.error("Clear cart error:", error);
+      toast.error("Error clearing cart");
     }
   };
 
   const createOrder = async () => {
     if (!selectedPaymentMethod) {
-      toast.error('Please select a payment method');
+      toast.error("Please select a payment method");
       return;
     }
 
     setProcessingOrder(true);
-    
+
     try {
       const response = await apiClient.createOrder({
         payment_method_id: selectedPaymentMethod,
-        notes: orderNotes
+        notes: orderNotes,
       });
-      
+
       if (response.success) {
-        toast.success('Order created successfully!');
+        toast.success("Order created successfully!");
         setCartItems([]);
-        router.push('/customer/orders');
+        router.push("/orders");
       } else {
-        toast.error('Failed to create order');
+        toast.error("Failed to create order");
       }
     } catch (error) {
-      console.error('Create order error:', error);
-      toast.error('Error creating order');
+      console.error("Create order error:", error);
+      toast.error("Error creating order");
     } finally {
       setProcessingOrder(false);
     }
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0).toFixed(2);
+    return cartItems
+      .reduce((total, item) => total + item.product.price * item.quantity, 0)
+      .toFixed(2);
   };
 
   const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0).toFixed(2);
+    return cartItems
+      .reduce((total, item) => total + item.product.price * item.quantity, 0)
+      .toFixed(2);
   };
 
   const tax = (calculateSubtotal() * 0.1).toFixed(2);
-  const shipping = cartItems.length > 0 ? 10.00 : 0;
-  const total = (parseFloat(calculateSubtotal()) + parseFloat(tax) + shipping).toFixed(2);
+  const shipping = cartItems.length > 0 ? 10.0 : 0;
+  const total = (
+    parseFloat(calculateSubtotal()) +
+    parseFloat(tax) +
+    shipping
+  ).toFixed(2);
 
   if (loading) {
     return (
@@ -181,8 +191,12 @@ const CartPage = () => {
                 <ArrowLeft size={20} className="text-gray-600" />
               </button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-                <p className="text-gray-600">{cartItems.length} items in your cart</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Shopping Cart
+                </h1>
+                <p className="text-gray-600">
+                  {cartItems.length} items in your cart
+                </p>
               </div>
             </div>
             {cartItems.length > 0 && (
@@ -202,11 +216,16 @@ const CartPage = () => {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
-                <div key={item.id} className="bg-white rounded-xl p-6 shadow-lg">
+                <div
+                  key={item.id}
+                  className="bg-white rounded-xl p-6 shadow-lg"
+                >
                   <div className="flex items-center space-x-4">
                     {/* Product Image */}
                     <div className="w-20 h-20 bg-gradient-to-br from-[#EDE8F5] to-[#ADBBDA] rounded-lg flex items-center justify-center flex-shrink-0">
-                      <div className="text-2xl text-[#3D52A0] opacity-20">📦</div>
+                      <div className="text-2xl text-[#3D52A0] opacity-20">
+                        📦
+                      </div>
                     </div>
 
                     {/* Product Info */}
@@ -225,13 +244,15 @@ const CartPage = () => {
                     {/* Quantity Controls */}
                     <div className="flex items-center space-x-3">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity - 1)
+                        }
                         disabled={item.quantity <= 1 || updating[item.id]}
                         className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Minus size={16} />
                       </button>
-                      
+
                       <span className="w-12 text-center font-medium">
                         {updating[item.id] ? (
                           <div className="spinner mx-auto"></div>
@@ -239,9 +260,11 @@ const CartPage = () => {
                           item.quantity
                         )}
                       </span>
-                      
+
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
                         disabled={updating[item.id]}
                         className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -274,8 +297,10 @@ const CartPage = () => {
             <div className="space-y-6">
               {/* Summary Card */}
               <div className="bg-white rounded-xl p-6 shadow-lg">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
-                
+                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                  Order Summary
+                </h2>
+
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal:</span>
@@ -291,8 +316,12 @@ const CartPage = () => {
                   </div>
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between">
-                      <span className="text-lg font-bold text-gray-900">Total:</span>
-                      <span className="text-lg font-bold text-[#3D52A0]">${total}</span>
+                      <span className="text-lg font-bold text-gray-900">
+                        Total:
+                      </span>
+                      <span className="text-lg font-bold text-[#3D52A0]">
+                        ${total}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -300,8 +329,10 @@ const CartPage = () => {
 
               {/* Payment Method */}
               <div className="bg-white rounded-xl p-6 shadow-lg">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
-                
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Payment Method
+                </h3>
+
                 {paymentMethods.length > 0 ? (
                   <select
                     value={selectedPaymentMethod}
@@ -326,7 +357,9 @@ const CartPage = () => {
 
               {/* Order Notes */}
               <div className="bg-white rounded-xl p-6 shadow-lg">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Notes</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Order Notes
+                </h3>
                 <textarea
                   value={orderNotes}
                   onChange={(e) => setOrderNotes(e.target.value)}
@@ -362,12 +395,14 @@ const CartPage = () => {
             <div className="w-24 h-24 bg-gradient-to-br from-[#EDE8F5] to-[#ADBBDA] rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart size={48} className="text-[#3D52A0]" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Your cart is empty
+            </h2>
             <p className="text-gray-600 mb-8">
               Looks like you haven't added any items to your cart yet.
             </p>
             <button
-              onClick={() => router.push('/customer/products')}
+              onClick={() => router.push("/products")}
               className="btn-primary inline-flex items-center"
             >
               <Package size={20} className="mr-2" />
@@ -381,4 +416,3 @@ const CartPage = () => {
 };
 
 export default CartPage;
-

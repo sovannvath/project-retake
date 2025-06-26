@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../../components/layout/Layout';
-import apiClient from '../../lib/api/client';
-import { 
-  Package, 
-  Truck, 
-  CheckCircle, 
-  Clock, 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Layout from "../../components/layout/Layout";
+import apiClient from "../../lib/api/client";
+import {
+  Package,
+  Truck,
+  CheckCircle,
+  Clock,
   AlertCircle,
   Eye,
   Search,
@@ -15,17 +15,17 @@ import {
   CreditCard,
   User,
   Calendar,
-  DollarSign
-} from 'lucide-react';
-import { toast } from 'sonner';
+  DollarSign,
+} from "lucide-react";
+import { toast } from "sonner";
 
-const StaffOrdersPage = () => {
+const OrderManagePage = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [paymentFilter, setPaymentFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [paymentFilter, setPaymentFilter] = useState("all");
   const [updating, setUpdating] = useState({});
   const router = useRouter();
 
@@ -51,36 +51,44 @@ const StaffOrdersPage = () => {
         setOrders(response.data);
         setFilteredOrders(response.data);
       } else {
-        toast.error('Failed to load orders');
+        toast.error("Failed to load orders");
       }
     } catch (error) {
-      console.error('Orders error:', error);
-      toast.error('Error loading orders');
+      console.error("Orders error:", error);
+      toast.error("Error loading orders");
     } finally {
       setLoading(false);
     }
   };
 
   const filterOrders = () => {
+    if (!Array.isArray(orders)) {
+      return;
+    }
     let filtered = [...orders];
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(order =>
-        order.id.toString().includes(searchTerm) ||
-        order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.user?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (order) =>
+          order.id.toString().includes(searchTerm) ||
+          order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(order => order.order_status === statusFilter);
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(
+        (order) => order.order_status === statusFilter,
+      );
     }
 
     // Payment filter
-    if (paymentFilter !== 'all') {
-      filtered = filtered.filter(order => order.payment_status === paymentFilter);
+    if (paymentFilter !== "all") {
+      filtered = filtered.filter(
+        (order) => order.payment_status === paymentFilter,
+      );
     }
 
     // Sort by date (newest first)
@@ -91,20 +99,24 @@ const StaffOrdersPage = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     setUpdating({ ...updating, [`order_${orderId}`]: true });
-    
+
     try {
       const response = await apiClient.updateOrderStatus(orderId, newStatus);
       if (response.success) {
-        setOrders(orders.map(order => 
-          order.id === orderId ? { ...order, order_status: newStatus } : order
-        ));
-        toast.success('Order status updated successfully');
+        setOrders(
+          orders.map((order) =>
+            order.id === orderId
+              ? { ...order, order_status: newStatus }
+              : order,
+          ),
+        );
+        toast.success("Order status updated successfully");
       } else {
-        toast.error('Failed to update order status');
+        toast.error("Failed to update order status");
       }
     } catch (error) {
-      console.error('Update order status error:', error);
-      toast.error('Error updating order status');
+      console.error("Update order status error:", error);
+      toast.error("Error updating order status");
     } finally {
       setUpdating({ ...updating, [`order_${orderId}`]: false });
     }
@@ -112,20 +124,24 @@ const StaffOrdersPage = () => {
 
   const updatePaymentStatus = async (orderId, newStatus) => {
     setUpdating({ ...updating, [`payment_${orderId}`]: true });
-    
+
     try {
       const response = await apiClient.updatePaymentStatus(orderId, newStatus);
       if (response.success) {
-        setOrders(orders.map(order => 
-          order.id === orderId ? { ...order, payment_status: newStatus } : order
-        ));
-        toast.success('Payment status updated successfully');
+        setOrders(
+          orders.map((order) =>
+            order.id === orderId
+              ? { ...order, payment_status: newStatus }
+              : order,
+          ),
+        );
+        toast.success("Payment status updated successfully");
       } else {
-        toast.error('Failed to update payment status');
+        toast.error("Failed to update payment status");
       }
     } catch (error) {
-      console.error('Update payment status error:', error);
-      toast.error('Error updating payment status');
+      console.error("Update payment status error:", error);
+      toast.error("Error updating payment status");
     } finally {
       setUpdating({ ...updating, [`payment_${orderId}`]: false });
     }
@@ -133,13 +149,13 @@ const StaffOrdersPage = () => {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <CheckCircle className="text-green-500" size={20} />;
-      case 'processing':
+      case "processing":
         return <Clock className="text-yellow-500" size={20} />;
-      case 'shipped':
+      case "shipped":
         return <Truck className="text-blue-500" size={20} />;
-      case 'cancelled':
+      case "cancelled":
         return <AlertCircle className="text-red-500" size={20} />;
       default:
         return <Package className="text-gray-500" size={20} />;
@@ -148,49 +164,52 @@ const StaffOrdersPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'processing':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'shipped':
-        return 'bg-blue-100 text-blue-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "processing":
+        return "bg-yellow-100 text-yellow-800";
+      case "shipped":
+        return "bg-blue-100 text-blue-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPaymentStatusColor = (status) => {
     switch (status) {
-      case 'paid':
-        return 'bg-green-100 text-green-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'failed':
-        return 'bg-red-100 text-red-800';
+      case "paid":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "failed":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPriorityLevel = (order) => {
-    const daysSinceOrder = Math.floor((new Date() - new Date(order.created_at)) / (1000 * 60 * 60 * 24));
-    
-    if (order.payment_status === 'failed') return 'high';
-    if (order.order_status === 'pending' && daysSinceOrder > 2) return 'high';
-    if (order.order_status === 'processing' && daysSinceOrder > 1) return 'medium';
-    return 'low';
+    const daysSinceOrder = Math.floor(
+      (new Date() - new Date(order.created_at)) / (1000 * 60 * 60 * 24),
+    );
+
+    if (order.payment_status === "failed") return "high";
+    if (order.order_status === "pending" && daysSinceOrder > 2) return "high";
+    if (order.order_status === "processing" && daysSinceOrder > 1)
+      return "medium";
+    return "low";
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high':
-        return 'border-l-4 border-red-500 bg-red-50';
-      case 'medium':
-        return 'border-l-4 border-yellow-500 bg-yellow-50';
+      case "high":
+        return "border-l-4 border-red-500 bg-red-50";
+      case "medium":
+        return "border-l-4 border-yellow-500 bg-yellow-50";
       default:
-        return 'border-l-4 border-green-500 bg-white';
+        return "border-l-4 border-green-500 bg-white";
     }
   };
 
@@ -209,8 +228,12 @@ const StaffOrdersPage = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Management</h1>
-          <p className="text-gray-600">Process and manage customer orders efficiently</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Order Management
+          </h1>
+          <p className="text-gray-600">
+            Process and manage customer orders efficiently
+          </p>
         </div>
 
         {/* Filters */}
@@ -218,7 +241,10 @@ const StaffOrdersPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search
+                size={20}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              />
               <input
                 type="text"
                 placeholder="Search orders, customers..."
@@ -269,8 +295,8 @@ const StaffOrdersPage = () => {
             filteredOrders.map((order) => {
               const priority = getPriorityLevel(order);
               return (
-                <div 
-                  key={order.id} 
+                <div
+                  key={order.id}
                   className={`rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 ${getPriorityColor(priority)}`}
                 >
                   <div className="flex items-center justify-between mb-4">
@@ -283,21 +309,21 @@ const StaffOrdersPage = () => {
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                           <div className="flex items-center">
                             <User size={14} className="mr-1" />
-                            {order.user?.name || 'N/A'}
+                            {order.user?.name || "N/A"}
                           </div>
                           <div className="flex items-center">
                             <Calendar size={14} className="mr-1" />
                             {new Date(order.created_at).toLocaleDateString()}
                           </div>
                           <div className="flex items-center">
-                            <DollarSign size={14} className="mr-1" />
-                            ${order.total}
+                            <DollarSign size={14} className="mr-1" />$
+                            {order.total}
                           </div>
                         </div>
                       </div>
                     </div>
-                    
-                    {priority === 'high' && (
+
+                    {priority === "high" && (
                       <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium">
                         High Priority
                       </div>
@@ -313,7 +339,9 @@ const StaffOrdersPage = () => {
                       <div className="flex items-center space-x-2">
                         <select
                           value={order.order_status}
-                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                          onChange={(e) =>
+                            updateOrderStatus(order.id, e.target.value)
+                          }
                           disabled={updating[`order_${order.id}`]}
                           className="input flex-1"
                         >
@@ -337,7 +365,9 @@ const StaffOrdersPage = () => {
                       <div className="flex items-center space-x-2">
                         <select
                           value={order.payment_status}
-                          onChange={(e) => updatePaymentStatus(order.id, e.target.value)}
+                          onChange={(e) =>
+                            updatePaymentStatus(order.id, e.target.value)
+                          }
                           disabled={updating[`payment_${order.id}`]}
                           className="input flex-1"
                         >
@@ -357,8 +387,12 @@ const StaffOrdersPage = () => {
                         Customer Details
                       </label>
                       <div className="text-sm text-gray-900">
-                        <p className="font-medium">{order.user?.name || 'N/A'}</p>
-                        <p className="text-gray-600">{order.user?.email || 'N/A'}</p>
+                        <p className="font-medium">
+                          {order.user?.name || "N/A"}
+                        </p>
+                        <p className="text-gray-600">
+                          {order.user?.email || "N/A"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -366,16 +400,23 @@ const StaffOrdersPage = () => {
                   {/* Order Items Preview */}
                   {order.items && order.items.length > 0 && (
                     <div className="mb-4">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Order Items:</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        Order Items:
+                      </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         {order.items.slice(0, 3).map((item, index) => (
-                          <div key={index} className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg"
+                          >
                             <div className="w-8 h-8 bg-gradient-to-br from-[#EDE8F5] to-[#ADBBDA] rounded flex items-center justify-center flex-shrink-0">
-                              <div className="text-xs text-[#3D52A0] opacity-50">📦</div>
+                              <div className="text-xs text-[#3D52A0] opacity-50">
+                                📦
+                              </div>
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-gray-900 truncate">
-                                {item.product?.name || 'Product'}
+                                {item.product?.name || "Product"}
                               </p>
                               <p className="text-xs text-gray-600">
                                 Qty: {item.quantity} × ${item.price}
@@ -397,7 +438,9 @@ const StaffOrdersPage = () => {
                   {/* Notes */}
                   {order.notes && (
                     <div className="mb-4">
-                      <p className="text-sm font-medium text-gray-700 mb-1">Customer Notes:</p>
+                      <p className="text-sm font-medium text-gray-700 mb-1">
+                        Customer Notes:
+                      </p>
                       <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">
                         {order.notes}
                       </p>
@@ -407,17 +450,24 @@ const StaffOrdersPage = () => {
                   {/* Action Buttons */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                     <div className="flex items-center space-x-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.order_status)}`}>
-                        {order.order_status?.charAt(0).toUpperCase() + order.order_status?.slice(1)}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.order_status)}`}
+                      >
+                        {order.order_status?.charAt(0).toUpperCase() +
+                          order.order_status?.slice(1)}
                       </span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(order.payment_status)}`}>
-                        Payment: {order.payment_status?.charAt(0).toUpperCase() + order.payment_status?.slice(1)}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(order.payment_status)}`}
+                      >
+                        Payment:{" "}
+                        {order.payment_status?.charAt(0).toUpperCase() +
+                          order.payment_status?.slice(1)}
                       </span>
                     </div>
-                    
+
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => router.push(`/staff/orders/${order.id}`)}
+                        onClick={() => router.push(`/orders/${order.id}`)}
                         className="flex items-center px-4 py-2 border border-[#3D52A0] text-[#3D52A0] rounded-lg hover:bg-[#3D52A0] hover:text-white transition-colors duration-200"
                       >
                         <Eye size={16} className="mr-2" />
@@ -433,12 +483,13 @@ const StaffOrdersPage = () => {
               <div className="w-24 h-24 bg-gradient-to-br from-[#EDE8F5] to-[#ADBBDA] rounded-full flex items-center justify-center mx-auto mb-6">
                 <Package size={48} className="text-[#3D52A0]" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">No orders found</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                No orders found
+              </h2>
               <p className="text-gray-600">
-                {searchTerm || statusFilter !== 'all' || paymentFilter !== 'all'
-                  ? 'Try adjusting your search or filter criteria'
-                  : 'No orders available at the moment.'
-                }
+                {searchTerm || statusFilter !== "all" || paymentFilter !== "all"
+                  ? "Try adjusting your search or filter criteria"
+                  : "No orders available at the moment."}
               </p>
             </div>
           )}
@@ -448,5 +499,4 @@ const StaffOrdersPage = () => {
   );
 };
 
-export default StaffOrdersPage;
-
+export default OrderManagePage;

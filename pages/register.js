@@ -1,27 +1,27 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { useAuth } from '../../lib/auth/authContext';
-import { Eye, EyeOff, UserPlus, Mail, Lock, User } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { useAuth } from "../lib/auth/authContext";
+import { Eye, EyeOff, UserPlus, Mail, Lock, User } from "lucide-react";
+import { toast } from "sonner";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { register, isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (isAuthenticated && !loading) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, loading, router]);
 
@@ -34,9 +34,9 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.password_confirmation) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -45,13 +45,13 @@ const Register = () => {
     try {
       const result = await register(formData);
       if (result.success) {
-        toast.success('Registration successful!');
-        router.push('/dashboard');
+        toast.success("Registration successful!");
+        router.push("/dashboard");
       } else {
-        toast.error(result.error || 'Registration failed');
+        toast.error(result.error || "Registration failed");
       }
     } catch (error) {
-      toast.error('An error occurred during registration');
+      toast.error("An error occurred during registration");
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +74,9 @@ const Register = () => {
             <div className="mx-auto h-16 w-16 bg-gradient-to-r from-[#3D52A0] to-[#7091E6] rounded-full flex items-center justify-center mb-6">
               <UserPlus size={32} className="text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Create Account
+            </h2>
             <p className="text-gray-600">Join our supply chain platform</p>
           </div>
 
@@ -83,7 +85,10 @@ const Register = () => {
             <div className="space-y-4">
               {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Full Name
                 </label>
                 <div className="relative">
@@ -106,7 +111,10 @@ const Register = () => {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email Address
                 </label>
                 <div className="relative">
@@ -129,7 +137,10 @@ const Register = () => {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -139,7 +150,7 @@ const Register = () => {
                   <input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
                     value={formData.password}
@@ -153,9 +164,15 @@ const Register = () => {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   >
                     {showPassword ? (
-                      <EyeOff size={20} className="text-gray-400 hover:text-gray-600" />
+                      <EyeOff
+                        size={20}
+                        className="text-gray-400 hover:text-gray-600"
+                      />
                     ) : (
-                      <Eye size={20} className="text-gray-400 hover:text-gray-600" />
+                      <Eye
+                        size={20}
+                        className="text-gray-400 hover:text-gray-600"
+                      />
                     )}
                   </button>
                 </div>
@@ -163,7 +180,10 @@ const Register = () => {
 
               {/* Confirm Password */}
               <div>
-                <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password_confirmation"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -173,7 +193,7 @@ const Register = () => {
                   <input
                     id="password_confirmation"
                     name="password_confirmation"
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    type={showConfirmPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
                     value={formData.password_confirmation}
@@ -187,9 +207,15 @@ const Register = () => {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   >
                     {showConfirmPassword ? (
-                      <EyeOff size={20} className="text-gray-400 hover:text-gray-600" />
+                      <EyeOff
+                        size={20}
+                        className="text-gray-400 hover:text-gray-600"
+                      />
                     ) : (
-                      <Eye size={20} className="text-gray-400 hover:text-gray-600" />
+                      <Eye
+                        size={20}
+                        className="text-gray-400 hover:text-gray-600"
+                      />
                     )}
                   </button>
                 </div>
@@ -220,9 +246,9 @@ const Register = () => {
             {/* Login Link */}
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link 
-                  href="/auth/login" 
+                Already have an account?{" "}
+                <Link
+                  href="/login"
                   className="font-medium text-[#3D52A0] hover:text-[#7091E6] transition-colors duration-200"
                 >
                   Sign in here
@@ -237,4 +263,3 @@ const Register = () => {
 };
 
 export default Register;
-
