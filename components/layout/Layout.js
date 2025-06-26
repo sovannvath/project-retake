@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '../../lib/auth/authContext';
-import { 
-  Menu, 
-  X, 
-  ShoppingCart, 
-  User, 
-  Settings, 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../../lib/auth/authContext";
+import {
+  Menu,
+  X,
+  ShoppingCart,
+  User,
+  Settings,
   LogOut,
   Bell,
   Home,
   Package,
   Users,
   BarChart3,
-  Truck
-} from 'lucide-react';
-import { toast } from 'sonner';
+  Truck,
+} from "lucide-react";
+import { toast } from "sonner";
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,36 +28,40 @@ const Layout = ({ children }) => {
   // Navigation items based on user role
   const getNavigationItems = () => {
     const baseItems = [
-      { name: 'Dashboard', href: `/${userRole}`, icon: Home },
+      { name: "Dashboard", href: `/dashboard/${userRole}`, icon: Home },
     ];
 
     switch (userRole) {
-      case 'customer':
+      case "customer":
         return [
           ...baseItems,
-          { name: 'Products', href: '/customer/products', icon: Package },
-          { name: 'Cart', href: '/customer/cart', icon: ShoppingCart },
-          { name: 'Orders', href: '/customer/orders', icon: Truck },
+          { name: "Products", href: "/products", icon: Package },
+          { name: "Cart", href: "/cart", icon: ShoppingCart },
+          { name: "Orders", href: "/orders", icon: Truck },
+          { name: "Notifications", href: "/notifications", icon: Bell },
+          { name: "Profile", href: "/user/profile", icon: User },
         ];
-      case 'admin':
+      case "admin":
         return [
           ...baseItems,
-          { name: 'Products', href: '/admin/products', icon: Package },
-          { name: 'Orders', href: '/admin/orders', icon: Truck },
-          { name: 'Request Orders', href: '/admin/request-orders', icon: BarChart3 },
-          { name: 'Users', href: '/admin/users', icon: Users },
+          { name: "Products", href: "/products/manage", icon: Package },
+          { name: "Orders", href: "/orders/manage", icon: Truck },
+          { name: "Request Orders", href: "/request-orders", icon: BarChart3 },
+          { name: "Notifications", href: "/notifications", icon: Bell },
         ];
-      case 'staff':
+      case "staff":
         return [
           ...baseItems,
-          { name: 'Orders', href: '/staff/orders', icon: Truck },
-          { name: 'Products', href: '/staff/products', icon: Package },
+          { name: "Orders", href: "/orders/manage", icon: Truck },
+          { name: "Products", href: "/products", icon: Package },
+          { name: "Notifications", href: "/notifications", icon: Bell },
         ];
-      case 'warehouse':
+      case "warehouse":
         return [
           ...baseItems,
-          { name: 'Request Orders', href: '/warehouse/request-orders', icon: BarChart3 },
-          { name: 'Inventory', href: '/warehouse/inventory', icon: Package },
+          { name: "Request Orders", href: "/request-orders", icon: BarChart3 },
+          { name: "Products", href: "/products/manage", icon: Package },
+          { name: "Notifications", href: "/notifications", icon: Bell },
         ];
       default:
         return baseItems;
@@ -69,10 +73,10 @@ const Layout = ({ children }) => {
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success('Logged out successfully');
-      router.push('/auth/login');
+      toast.success("Logged out successfully");
+      router.push("/login");
     } catch (error) {
-      toast.error('Error logging out');
+      toast.error("Error logging out");
     }
   };
 
@@ -93,7 +97,7 @@ const Layout = ({ children }) => {
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
@@ -111,7 +115,7 @@ const Layout = ({ children }) => {
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = router.pathname === item.href;
-              
+
               return (
                 <button
                   key={item.name}
@@ -121,8 +125,8 @@ const Layout = ({ children }) => {
                   }}
                   className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-gradient-to-r from-[#3D52A0] to-[#7091E6] text-white shadow-lg'
-                      : 'text-gray-700 hover:bg-[#EDE8F5] hover:text-[#3D52A0]'
+                      ? "bg-gradient-to-r from-[#3D52A0] to-[#7091E6] text-white shadow-lg"
+                      : "text-gray-700 hover:bg-[#EDE8F5] hover:text-[#3D52A0]"
                   }`}
                 >
                   <Icon size={20} className="mr-3" />
@@ -185,9 +189,7 @@ const Layout = ({ children }) => {
 
         {/* Page content */}
         <main className="p-6">
-          <div className="animate-fade-in">
-            {children}
-          </div>
+          <div className="animate-fade-in">{children}</div>
         </main>
       </div>
     </div>
@@ -195,4 +197,3 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
-
