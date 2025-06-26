@@ -38,20 +38,28 @@ const ProductsPage = () => {
     try {
       const response = await apiClient.getProducts();
       if (response.success) {
-        setProducts(response.data);
-        setFilteredProducts(response.data);
+        const productsData = Array.isArray(response.data) ? response.data : [];
+        setProducts(productsData);
+        setFilteredProducts(productsData);
       } else {
         toast.error("Failed to load products");
+        setProducts([]);
+        setFilteredProducts([]);
       }
     } catch (error) {
       console.error("Products error:", error);
       toast.error("Error loading products");
+      setProducts([]);
+      setFilteredProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
   const filterProducts = () => {
+    if (!Array.isArray(products)) {
+      return;
+    }
     let filtered = [...products];
 
     // Search filter
