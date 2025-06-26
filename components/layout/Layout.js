@@ -171,7 +171,10 @@ const Layout = ({ children }) => {
 
           <div className="flex items-center space-x-4">
             {/* Notifications */}
-            <button className="relative p-2 text-gray-500 hover:text-[#3D52A0] transition-colors duration-200">
+            <button
+              onClick={() => router.push("/notifications")}
+              className="relative p-2 text-gray-500 hover:text-[#3D52A0] transition-colors duration-200"
+            >
               <Bell size={20} />
               {notifications.length > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -181,7 +184,10 @@ const Layout = ({ children }) => {
             </button>
 
             {/* Settings */}
-            <button className="p-2 text-gray-500 hover:text-[#3D52A0] transition-colors duration-200">
+            <button
+              onClick={() => router.push("/user/profile")}
+              className="p-2 text-gray-500 hover:text-[#3D52A0] transition-colors duration-200"
+            >
               <Settings size={20} />
             </button>
           </div>
