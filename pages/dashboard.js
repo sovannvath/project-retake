@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '../lib/auth/authContext';
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../lib/auth/authContext";
 
 const Dashboard = () => {
   const { isAuthenticated, getUserRole, loading } = useAuth();
@@ -10,9 +10,9 @@ const Dashboard = () => {
     if (!loading) {
       if (isAuthenticated) {
         const role = getUserRole();
-        router.push(`/${role}`);
+        router.push(`/dashboard/${role}`);
       } else {
-        router.push('/auth/login');
+        router.push("/login");
       }
     }
   }, [isAuthenticated, loading, router, getUserRole]);
@@ -28,4 +28,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
